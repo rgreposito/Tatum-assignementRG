@@ -1,0 +1,44 @@
+---
+- name: Deploy to cloud
+  hosts: ec2
+  become: yes
+
+  tasks:
+  - name: Create S3 bucket
+    aws_s3_bucket:
+      name: my-bucket
+      state: present
+
+  - name: Upload data to S3
+    aws_s3_object:
+      bucket: my-bucket
+      key: data.csv
+      src: data.csv
+      state: present
+
+  - name: Create EC2 instance
+    ec2_instance:
+      instance_type: t2.micro
+      image: ami-0c94855ba95c71c99
+      vpc_subnet_id: subnet-0a9f2f2f2f2f2f2f2
+      security_group_ids:
+        - sg-0a9f2f2f2f2f2f2f2
+      state: present
+
+  - name: Install Docker
+    apt:
+      name: docker.io
+      state: present
+
+  - name: Start Docker
+    service:
+      name: docker
+      state: started
+
+  - name: Run Docker container
+    docker_container:
+      name: my-app
+      image: my-app
+      ports:
+        - "8080:8080"
+      state: started
