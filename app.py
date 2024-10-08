@@ -1,3 +1,6 @@
+#This script downloads the COVID-19 data from the CSSEGISandData repository,
+#filters the data for Czechia, and renders an HTML page with the data.
+
 import requests
 import pandas as pd
 from flask import Flask, render_template
